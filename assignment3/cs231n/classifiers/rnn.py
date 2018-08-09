@@ -143,6 +143,8 @@ class CaptioningRNN(object):
         # step 2
         embeded_caption_in, embed_cache = word_embedding_forward(captions_in, W_embed)
         # step 3
+        # use affine_out as the initial hidden state of the Recurrent Nueral Network
+        # and use the word as the feed in at each timestep
         if self.cell_type == 'rnn':
           rnn_out, rnn_cache = rnn_forward(embeded_caption_in, affine_out, Wx, Wh, b)
         elif self.cell_type == 'lstm':
@@ -227,11 +229,14 @@ class CaptioningRNN(object):
         affine_out, _ = affine_forward(features, W_proj, b_proj)
         # step 2
         # initialize the previous word index with self._start
+        # initialize the first word with the <START> token
         prev_idx = [self._start] * N
 
+        # initialize the previous hidden state
         prev_h = affine_out
         # the initial cell_statet are just zeros
         prev_c = np.zeros_like(affine_out)
+
         # iterate through all the time-steps
         for i in range(max_length):
           # embed the indices into word vectors
@@ -243,7 +248,9 @@ class CaptioningRNN(object):
           elif self.cell_type == 'lstm':
             next_h, next_c, _ = lstm_step_forward(prev_word_embeded, prev_h, prev_c, Wx, Wh, b)
             prev_h, prev_c = next_h, next_c
+          # generate the probabilities of the words
           vocab_out, _ = affine_forward(next_h, W_vocab, b_vocab)
+          # and then sample
           captions[:, i] = list(np.argmax(vocab_out, axis = 1))
           prev_idx = captions[:, i]
           

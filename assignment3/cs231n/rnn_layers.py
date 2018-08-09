@@ -198,6 +198,8 @@ def word_embedding_forward(x, W):
     ##############################################################################
     # I personally believe that there is some magic here
     # tried and somehow it worked
+    # each word has a index and each index corresponds with a unique vector stored
+    # W matrix
     out = W[x, :]
     cache = (x, W.shape)
     ##############################################################################
@@ -228,7 +230,7 @@ def word_embedding_backward(dout, cache):
     # Note that Words can appear more than once in a sequence.                   #
     # HINT: Look up the function np.add.at                                       #
     ##############################################################################
-    x, W_shape = cache# x(N, T)
+    x, W_shape = cache # x(N, T)
     dW = np.zeros(W_shape)
     # explained in OneNote check the full explaination of the function there
     np.add.at(dW, x, dout)
@@ -322,7 +324,9 @@ def lstm_step_backward(dnext_h, dnext_c, cache):
     # HINT: For sigmoid and tanh you can compute local derivatives in terms of  #
     # the output value from the nonlinearity.                                   #
     #############################################################################
-    sig_i, sig_f, sig_o, tanh_g, tanh_c, Wx, Wh, prev_h, prev_c, x = cache
+    sig_i, sig_f, sig_o, tanh_g, tanh_c, Wx, Wh, prev_h, prev_c, x = cache  
+
+
     
     dsig_o = tanh_c * dnext_h
     dtanh_c = dnext_h * sig_o
@@ -382,6 +386,7 @@ def lstm_forward(x, h0, Wx, Wh, b):
     #############################################################################
     N, T, D = x.shape
     H = h0.shape[1]
+    # initialize cell state and hidden state
     prev_c = np.zeros((N, H))
     h = np.zeros((N, T, H))
     prev_h = h0
