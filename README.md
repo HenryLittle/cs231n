@@ -3,4 +3,4 @@
 - all complete(with TensorFlow)
 
 ## [feature]
-- own VEA implemetation with a simple latent space visualization
+- own VAE implemetation with a simple latent space visualization in as3
